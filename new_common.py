@@ -2,7 +2,8 @@
 # guest mode, welcome page, login/signup & history
 
 import os
-os.environ["TORCH_DISABLE_CUSTOM_CLASS_LOOKUP"] = "1" import torch
+os.environ["TORCH_DISABLE_CUSTOM_CLASS_LOOKUP"] = "1" 
+import torch
 import streamlit as st, datetime, io, tempfile, numpy as np
 from PIL import Image
 import tensorflow as tf, librosa, torch.nn as nn
