@@ -14,3 +14,4 @@ firebase-admin
 opencv-python-headless
 decord
 tqdm
+albumentations
