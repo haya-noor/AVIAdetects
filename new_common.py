@@ -251,19 +251,19 @@ class FixedBN(tf.keras.layers.BatchNormalization):
 tf.keras.utils.get_custom_objects()['BatchNormalization'] = FixedBN
 
 # ────────────── PATCH old-Keras "batch_shape" → new name ──────────────
-from tensorflow.keras.layers import InputLayer
+# from tensorflow.keras.layers import InputLayer
 
-_original_from_config = InputLayer.from_config  # keep reference
+# _original_from_config = InputLayer.from_config  # keep reference
 
-@classmethod
-def _patched_from_config(cls, config):
-    # ↪ if a legacy model uses "batch_shape", rename it
-    if "batch_shape" in config and "batch_input_shape" not in config:
-        config["batch_input_shape"] = config.pop("batch_shape")
-    return _original_from_config(config)
+# @classmethod
+# def _patched_from_config(cls, config):
+#     # ↪ if a legacy model uses "batch_shape", rename it
+#     if "batch_shape" in config and "batch_input_shape" not in config:
+#         config["batch_input_shape"] = config.pop("batch_shape")
+#     return _original_from_config(config)
 
-# replace the method only once
-InputLayer.from_config = _patched_from_config
+# # replace the method only once
+# InputLayer.from_config = _patched_from_config
 # ───────────────────────────────────────────────────────────────────────
 
 
