@@ -434,7 +434,7 @@ def detection_interface():
 
         else:
             st.video(uploaded)
-            frames = st.number_input("Frames to sample", 1, 60, 15)
+            frames = 1
             fp16   = st.checkbox("Enable FP16", True) if torch.cuda.is_available() else False
             if st.button("Analyze Video"):
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
