@@ -1,11 +1,16 @@
-# firebase_admin_connect.py  – safe single‑initialisation wrapper
+# firebase_admin_connect.py
 
+import json
+import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# prevent “default Firebase app already exists” on repeated imports
+# Pull the JSON blob out of your secrets.toml
+sa = json.loads(st.secrets["firebase"]["account_key"])
+
+# Only initialize once
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
+    cred = credentials.Certificate(sa)
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
