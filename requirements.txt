@@ -16,4 +16,4 @@ decord
 tqdm
 albumentations
 requests==2.26.0
-requests-toolbelt
+requests-toolbelt==0.9.1
