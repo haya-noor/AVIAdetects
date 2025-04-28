@@ -13,6 +13,9 @@ from firebase_config import firebase_config
 from firebase_admin_connect import db
 import pandas as pd
 import gdown
+import json
+import firebase_admin
+from firebase_admin import credentials
 
 # ─────────────────────────────  GOOGLE DRIVE MODEL DOWNLOAD ─────────────────────────────
 # Placeholder Google Drive URLs (replace RANDOM_ID_* with your actual file IDs)
@@ -39,6 +42,15 @@ for url, path in [
 
 # 1. Page Config (MUST be first)
 st.set_page_config(page_title="AVIA - Home", layout="centered")
+
+# ─────────────────── FIREBASE ADMIN INITIALIZATION ───────────────────
+# Load service account JSON from Streamlit secrets
+sa_json = json.loads(st.secrets["firebase"]["account_key"])
+# Initialize Firebase Admin SDK (if not already)
+if not firebase_admin._apps:
+    cred = credentials.Certificate(sa_json)
+    firebase_admin.initialize_app(cred)
+
 
 # 2. Additional Imports
 import pyrebase
