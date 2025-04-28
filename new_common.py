@@ -2,9 +2,10 @@
 # guest mode, welcome page, login/signup & history
 
 import os
+os.environ["TORCH_DISABLE_CUSTOM_CLASS_LOOKUP"] = "1" import torch
 import streamlit as st, datetime, io, tempfile, numpy as np
 from PIL import Image
-import tensorflow as tf, librosa, torch, torch.nn as nn
+import tensorflow as tf, librosa, torch.nn as nn
 from torchvision import transforms
 from model.pred_func import load_genconvit, df_face, pred_vid, is_video, real_or_fake
 from model.config import load_config
