@@ -11,6 +11,6 @@ timm
 pandas
 pyrebase
 firebase-admin
-opencv-python
+opencv-python-headless
 decord
 tqdm
