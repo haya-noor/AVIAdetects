@@ -1,19 +1,35 @@
-streamlit
-streamlit-cookies-manager
-numpy>=1.21.0,<1.24.0
-pycryptodome>=3.19.0
-pillow
-tensorflow
-librosa
-torch
-torchvision
-timm
-pandas
-pyrebase
-firebase-admin
-opencv-python-headless
-decord
-tqdm
-albumentations
-requests==2.26.0
+# core framework
+streamlit==1.44.1
+
+# ML runtimes
+tensorflow-cpu==2.11.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# audio/video processing
+librosa>=0.10.0
+decord>=0.6.0
+opencv-python-headless>=4.8.0
+
+# face detection replacement (no dlib)
+numpy>=1.24.0
+pycryptodome>=3.17.0
+
+# driving GDrive downloads
+gdown>=4.5.1
+
+# Firebase & Google APIs
+pyrebase4>=3.0.27
+firebase-admin>=6.0.0
+google-api-python-client>=2.90.0
+
+# HTTP tooling
+requests>=2.32.3
 requests-toolbelt==0.9.1
+
+# utilities
+pandas>=2.2.3
+Pillow>=11.2.1
+tqdm>=4.65.0
+streamlit-cookies-manager>=0.2.5
+
