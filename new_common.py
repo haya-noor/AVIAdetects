@@ -38,6 +38,8 @@ FILE_PATHS = {
     "convnext2":  "convnext2_epoch_20.pth",
 }
 
+
+
 def _download_if_missing(name):
     out = FILE_PATHS[name]
     if not os.path.exists(out):
@@ -47,6 +49,15 @@ def _download_if_missing(name):
 # download everything once at startup
 for key in FILE_IDS:
     _download_if_missing(key)
+
+# ------------------------------------------------------------------
+# Map the helper’s FILE_PATHS to the constant names used elsewhere
+# ------------------------------------------------------------------
+AUDIO_MODEL_PATH  = FILE_PATHS["audio"]        #  ==> my_model.h5
+CONVNEXT_PATH     = FILE_PATHS["convnext"]     #  ==> convnext_tiny_1k_224_ema_image.pth
+CHECKPOINT_PATH   = FILE_PATHS["checkpoint"]   #  ==> checkpoint_epoch_20 (2).pth
+CONVNEXT2_PATH    = FILE_PATHS["convnext2"]    #  ==> convnext2_epoch_20.pth
+
 # ──────────────────────────────────────────────────────────────
 
 # 1. Page Config (MUST be first)
