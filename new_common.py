@@ -18,27 +18,36 @@ import firebase_admin
 from firebase_admin import credentials
 
 # ─────────────────────────────  GOOGLE DRIVE MODEL DOWNLOAD ─────────────────────────────
-# Placeholder Google Drive URLs (replace RANDOM_ID_* with your actual file IDs)
-GDRIVE_AUDIO        = "https://drive.google.com/uc?id=1GKyDyk22eu1fuENvMRBhjXJzA0hkkdUc"
-GDRIVE_CONVNEXT     = "https://drive.google.com/uc?id=1jOYMQCD6UReZSyPYjWONbCdZLme5jrSo"
-GDRIVE_CHECKPOINT   = "https://drive.google.com/uc?id=1EXlKnNXR18WWHBQzb9txF0fub0kEcKZQ"
-GDRIVE_CONVNEXT2    = "https://drive.google.com/uc?id=1KakhvcRbMbXA46xm5u5d5b3bQuxr8EuJ"
+import os
+import gdown
 
-# Local filenames
-AUDIO_MODEL_PATH    = "my_model.h5"
-CONVNEXT_PATH       = "convnext_tiny_1k_224_ema_image.pth"
-CHECKPOINT_PATH     = "checkpoint_epoch_20 (2).pth"
-CONVNEXT2_PATH      = "convnext2_epoch_20.pth"
+# ──────────────────── GOOGLE DRIVE FILES ────────────────────
+# logical name → Drive file ID
+FILE_IDS = {
+    "audio":      "1GKyDyk22eu1fuENvMRBhjXJzA0hkkdUc",
+    "convnext":   "1jOYMQCD6UReZSyPYjWONbCdZLme5jrSo",
+    "checkpoint": "1EXlKnNXR18WWHBQzb9txF0fub0kEcKZQ",
+    "convnext2":  "1KakhvcRbMbXA46xm5u5d5b3bQuxr8EuJ",
+}
 
-# Download if not already present
-for url, path in [
-    (GDRIVE_AUDIO, AUDIO_MODEL_PATH),
-    (GDRIVE_CONVNEXT, CONVNEXT_PATH),
-    (GDRIVE_CHECKPOINT, CHECKPOINT_PATH),
-    (GDRIVE_CONVNEXT2, CONVNEXT2_PATH),
-]:
-    if not os.path.exists(path):
-        gdown.download(url, path, quiet=False)
+# logical name → local filename
+FILE_PATHS = {
+    "audio":      "my_model.h5",
+    "convnext":   "convnext_tiny_1k_224_ema_image.pth",
+    "checkpoint": "checkpoint_epoch_20 (2).pth",
+    "convnext2":  "convnext2_epoch_20.pth",
+}
+
+def _download_if_missing(name):
+    out = FILE_PATHS[name]
+    if not os.path.exists(out):
+        url = f"https://drive.google.com/uc?id={FILE_IDS[name]}"
+        gdown.download(url, out, fuzzy=True, quiet=False)
+
+# download everything once at startup
+for key in FILE_IDS:
+    _download_if_missing(key)
+# ──────────────────────────────────────────────────────────────
 
 # 1. Page Config (MUST be first)
 st.set_page_config(page_title="AVIA - Home", layout="centered")
