@@ -11,6 +11,5 @@ pandas
 pyrebase
 firebase-admin
 opencv-python
-face-recognition
 decord
 tqdm
