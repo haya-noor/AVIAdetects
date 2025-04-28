@@ -2,7 +2,7 @@
 streamlit==1.44.1
 
 # ML runtimes
-tensorflow-cpu=0.37.1
+tensorflow-cpu==2.14.1
 torch>=2.0.0
 torchvision>=0.15.0
 timm
