@@ -1,0 +1,17 @@
+streamlit
+streamlit-cookies-manager
+numpy
+pillow
+tensorflow
+librosa
+torch
+torchvision
+timm
+pandas
+pyrebase
+firebase-admin
+opencv-python
+dlib
+face-recognition
+decord
+tqdm
