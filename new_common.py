@@ -315,11 +315,21 @@ def remove_key_recursively(d,key):
     elif isinstance(d,list):
         for i in d: remove_key_recursively(i,key)
 
-def predict_video_file(path,model,n=15,net="genconvit",fp16=False):
-    if not is_video(path): return None,None
-    df = df_face(path,n,net)
-    df = df.half() if fp16 else df
-    return pred_vid(df,model) if len(df)>=1 else (0,0)
+def predict_video_file(path, model, n=15, net="genconvit", fp16=False):
+    if not is_video(path):
+        return None, None
+
+    df = df_face(path, n, net)              # <= might be []
+
+ 
+    if isinstance(df, list) or len(df) == 0:
+        return None, None                   # caller will show “Prediction failed”
+
+    if fp16:
+        df = df.half()
+
+    return pred_vid(df, model)
+
 
 def store_result(tp, filename, result, confidence, local_path=None):
     file_url = None
