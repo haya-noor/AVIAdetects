@@ -15,3 +15,5 @@ opencv-python-headless
 decord
 tqdm
 albumentations
+requests==2.26.0
+requests-toolbelt
