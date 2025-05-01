@@ -329,6 +329,24 @@ def remove_key_recursively(d,key):
     elif isinstance(d,list):
         for i in d: remove_key_recursively(i,key)
 
+# ─────────────────────  VIDEO MODEL CACHE  ──────────────────────
+@st.cache_resource(hash_funcs={torch.nn.modules.module.Module: id})
+def get_video_model(fp16: bool):
+    cfg = load_config()
+    remove_key_recursively(cfg, "pretrained_cfg")
+    m = load_genconvit(
+        cfg,
+        net="genconvit",
+        ed_weight=GENCONVIT_ED_PATH,
+        vae_weight=GENCONVIT_VAE_PATH,
+        fp16=fp16,
+    )
+    if fp16:
+        m = m.half()
+    return m
+# ────────────────────────────────────────────────────────────────
+
+
 def predict_video_file(path, model, n=15, net="genconvit", fp16=False):
     if not is_video(path):
         return None, None
@@ -448,14 +466,13 @@ def detection_interface():
 
         else:
             st.video(uploaded)
-            frames = 1
-            fp16   = st.checkbox("Enable FP16", True) if torch.cuda.is_available() else False
+            frames = 3
+            fp16   = False
             if st.button("Analyze Video"):
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
-                cfg = load_config(); remove_key_recursively(cfg, "pretrained_cfg")
-                mdl = load_genconvit(cfg, net="genconvit", ed_weight=GENCONVIT_ED_PATH, vae_weight=GENCONVIT_VAE_PATH, fp16=fp16,)
-                if fp16: mdl = mdl.half()
+                mdl = get_video_model(fp16)
+
                 y, conf = predict_video_file(tmp.name, mdl, frames, fp16=fp16)
                 os.remove(tmp.name)
                 if y is not None:
@@ -504,15 +521,13 @@ def detection_interface_forguest():
 
         else:
             st.video(uploaded)
-            frames = st.number_input("Frames to sample", 1, 60, 15)
-            fp16   = st.checkbox("Enable FP16", True) if torch.cuda.is_available() else False
+            frames = 3
+            fp16 = False
             if st.button("Analyze Video"):
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
-                cfg = load_config(); remove_key_recursively(cfg, "pretrained_cfg")
-                mdl = load_genconvit(cfg, net="genconvit", ed_weight=GENCONVIT_ED_PATH, vae_weight=GENCONVIT_VAE_PATH,)
-                if fp16: mdl = mdl.half()
-                y, conf = predict_video_file(tmp.name, mdl, frames, fp16=fp16)
+                mdl = get_video_model(fp16)
+
                 os.remove(tmp.name)
                 if y is not None:
                     pred = real_or_fake(y)
