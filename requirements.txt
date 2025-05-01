@@ -36,3 +36,5 @@ Pillow>=11.2.1
 tqdm>=4.65.0
 streamlit-cookies-manager==0.2.0
 
+dlib-bin
+
