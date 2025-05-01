@@ -36,6 +36,8 @@ FILE_IDS = {
     "convnext":   "1jOYMQCD6UReZSyPYjWONbCdZLme5jrSo",
     "checkpoint": "1EXlKnNXR18WWHBQzb9txF0fub0kEcKZQ",
     "convnext2":  "1KakhvcRbMbXA46xm5u5d5b3bQuxr8EuJ",
+    "genconvit_ed":  "1TEjLc9QHmL5rg8kf0Q93ROkdmBb3Q3Wn",
+    "genconvit_vae": "1ZMz6v04WsMCj9iWhnyBgBPicyzRS0P5D",
 }
 
 # logical name → local filename
@@ -44,6 +46,8 @@ FILE_PATHS = {
     "convnext":   "convnext_tiny_1k_224_ema_image.pth",
     "checkpoint": "checkpoint_epoch_20 (2).pth",
     "convnext2":  "convnext2_epoch_20.pth",
+    "genconvit_ed":  "genconvit_ed_inference.pth",
+    "genconvit_vae": "genconvit_vae_inference.pth",    
 }
 
 
@@ -65,6 +69,8 @@ AUDIO_MODEL_PATH  = FILE_PATHS["audio"]        #  ==> my_model.h5
 CONVNEXT_PATH     = FILE_PATHS["convnext"]     #  ==> convnext_tiny_1k_224_ema_image.pth
 CHECKPOINT_PATH   = FILE_PATHS["checkpoint"]   #  ==> checkpoint_epoch_20 (2).pth
 CONVNEXT2_PATH    = FILE_PATHS["convnext2"]    #  ==> convnext2_epoch_20.pth
+GENCONVIT_ED_PATH  = FILE_PATHS["genconvit_ed"]
+GENCONVIT_VAE_PATH = FILE_PATHS["genconvit_vae"]
 
 # ──────────────────────────────────────────────────────────────
 
@@ -448,8 +454,7 @@ def detection_interface():
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
                 cfg = load_config(); remove_key_recursively(cfg, "pretrained_cfg")
-                mdl = load_genconvit(cfg, net="genconvit", ed_weight="genconvit_ed_inference",
-                                     vae_weight="genconvit_vae_inference", fp16=fp16)
+                mdl = load_genconvit(cfg, net="genconvit", ed_weight=GENCONVIT_ED_PATH, vae_weight=GENCONVIT_VAE_PATH, fp16=fp16,)
                 if fp16: mdl = mdl.half()
                 y, conf = predict_video_file(tmp.name, mdl, frames, fp16=fp16)
                 os.remove(tmp.name)
@@ -505,8 +510,7 @@ def detection_interface_forguest():
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
                 cfg = load_config(); remove_key_recursively(cfg, "pretrained_cfg")
-                mdl = load_genconvit(cfg, net="genconvit", ed_weight="genconvit_ed_inference",
-                                     vae_weight="genconvit_vae_inference", fp16=fp16)
+                mdl = load_genconvit(cfg, net="genconvit", ed_weight=GENCONVIT_ED_PATH, vae_weight=GENCONVIT_VAE_PATH,)
                 if fp16: mdl = mdl.half()
                 y, conf = predict_video_file(tmp.name, mdl, frames, fp16=fp16)
                 os.remove(tmp.name)
