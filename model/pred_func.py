@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import torch
 import dlib
-import face_recognition
+# import face_recognition
 from torchvision import transforms
 from tqdm import tqdm
 from dataset.loader import normalize_data
@@ -31,32 +31,52 @@ def load_genconvit(config, net, ed_weight, vae_weight, fp16):
     return model
 
 
+# ──────────────────────────────  FACE EXTRACTION  ─────────────────────────────
 def face_rec(frames, p=None, klass=None):
+    """
+    Extract one 224×224 RGB crop per video frame using dlib’s HOG or CUDA CNN
+    detector.  Returns (faces_array, count) just like the original function.
+
+    frames : np.ndarray[N, H, W, 3]  – RGB frames from decord
+    """
+    # Pre-allocate output (same logic as before)
     temp_face = np.zeros((len(frames), 224, 224, 3), dtype=np.uint8)
     count = 0
-    mod = "cnn" if dlib.DLIB_USE_CUDA else "hog"
 
-    for _, frame in tqdm(enumerate(frames), total=len(frames)):
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        face_locations = face_recognition.face_locations(
-            frame, number_of_times_to_upsample=0, model=mod
-        )
+    # Pick fastest detector available
+    detector = (
+        dlib.cnn_face_detection_model_v1("mmod_human_face_detector.dat")
+        if dlib.DLIB_USE_CUDA
+        else dlib.get_frontal_face_detector()
+    )
 
-        for face_location in face_locations:
-            if count < len(frames):
-                top, right, bottom, left = face_location
-                face_image = frame[top:bottom, left:right]
-                face_image = cv2.resize(
-                    face_image, (224, 224), interpolation=cv2.INTER_AREA
-                )
-                face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+    for frame in frames:
+        # dlib expects RGB
+        rgb = frame if frame.shape[-1] == 3 else cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-                temp_face[count] = face_image
-                count += 1
-            else:
+        # Detect
+        dets = detector(rgb, 0)  # 0 = no upsampling
+
+        # cnn_face_detection_model_v1 returns objects with .rect; HOG returns rectangles
+        rectangles = [d.rect if hasattr(d, "rect") else d for d in dets]
+
+        for rect in rectangles:
+            if count >= len(frames):
                 break
 
+            top, bottom = max(0, rect.top()), min(rgb.shape[0], rect.bottom())
+            left, right = max(0, rect.left()), min(rgb.shape[1], rect.right())
+
+            if bottom - top == 0 or right - left == 0:
+                continue  # skip degenerate boxes
+
+            face_img = rgb[top:bottom, left:right]
+            face_img = cv2.resize(face_img, (224, 224), interpolation=cv2.INTER_AREA)
+            temp_face[count] = face_img
+            count += 1
+
     return ([], 0) if count == 0 else (temp_face[:count], count)
+
 
 
 def preprocess_frame(frame):
