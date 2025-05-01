@@ -1,9 +1,15 @@
-# new_common.py  – AVIA | Cinzel logo, dark canvas, single-card after upload
-# guest mode, welcome page, login/signup & history
+import os, sys, types
 
-import os
-os.environ["TORCH_DISABLE_CUSTOM_CLASS_LOOKUP"] = "1" 
-import torch
+# ── 1. Runtime guards (MUST come before any Streamlit import) ──────────────────
+os.environ["TORCH_DISABLE_CUSTOM_CLASS_LOOKUP"]  = "1"      # keep your original
+os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "none"   # ← kills the crash
+
+import torch   # ← torch *before* we inject the stub
+
+# ── 2. Give Streamlit a harmless stub for torch.classes ────────────────────────
+sys.modules["torch.classes"] = types.ModuleType("torch.classes")
+sys.modules["torch.classes"].__path__ = []       # fake package path
+
 import streamlit as st, datetime, io, tempfile, numpy as np
 from PIL import Image
 import tensorflow as tf, librosa, torch.nn as nn
