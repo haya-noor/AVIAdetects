@@ -471,17 +471,23 @@ def detection_interface():
             if st.button("Analyze Video"):
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
-                mdl = get_video_model(fp16)
-
-                y, conf = predict_video_file(tmp.name, mdl, frames, fp16=fp16)
+            
+                mdl = get_video_model(fp16)                # cached model
+                y, conf = predict_video_file(tmp.name,     # ← missing call
+                                             mdl,
+                                             frames,
+                                             fp16=fp16)
+            
                 os.remove(tmp.name)
+            
                 if y is not None:
                     pred = real_or_fake(y)
-                    conf = 1-conf if pred=="REAL" else conf
+                    conf = 1 - conf if pred == "REAL" else conf
                     st.success(f"{pred} • {conf*100:.2f}%")
                     store_result("Video", uploaded.name, pred, conf*100)
                 else:
                     st.error("Prediction failed")
+
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -526,15 +532,23 @@ def detection_interface_forguest():
             if st.button("Analyze Video"):
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tmp.write(uploaded.getvalue()); tmp.close()
-                mdl = get_video_model(fp16)
-
+            
+                mdl = get_video_model(fp16)                # cached model
+                y, conf = predict_video_file(tmp.name,     # ← missing call
+                                             mdl,
+                                             frames,
+                                             fp16=fp16)
+            
                 os.remove(tmp.name)
+            
                 if y is not None:
                     pred = real_or_fake(y)
-                    conf = 1-conf if pred=="REAL" else conf
-                    st.success(f"{pred} • {conf*100:.2f}%"); store_result("Video", uploaded.name, pred, conf*100)
+                    conf = 1 - conf if pred == "REAL" else conf
+                    st.success(f"{pred} • {conf*100:.2f}%")
+                    store_result("Video", uploaded.name, pred, conf*100)
                 else:
                     st.error("Prediction failed")
+
 
         increment_guest_tries()
         st.info("No record is saved for guest users.")
