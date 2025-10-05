@@ -1,4 +1,13 @@
 # ===== SECURITY / SECRETS =====
+# Explicitly block known secret files
+serviceAccountKey.json
+audiovisualintegrityanalyser-firebase-adminsdk-*.json
+**/service_account.json
+**/credentials.json
+**/*-credentials.json
+**/*-adminsdk-*.json
+
+# Generic secrets & env
 secrets.txt
 *.key
 *.pem
@@ -12,11 +21,17 @@ secrets.txt
 *.token
 *.secret
 *.credentials
-**/credentials.json
-**/service_account.json
+
+# JSON is risky—block by default and ALLOWLIST safe config JSON (keep what you need)
+*.json
+!package.json
+!tsconfig.json
+!*.schema.json
+!*.config.json.example
+!*.example.json
 
 # ===== DATA / MODELS / CHECKPOINTS =====
-# common AV/ML folders
+# Common AV/ML folders
 weights/
 checkpoints/
 models/
@@ -27,8 +42,9 @@ outputs/
 lightning_logs/
 wandb/
 mlruns/
+.weights/
 
-# model files
+# Model files
 *.h5
 *.hdf5
 *.pth
@@ -41,7 +57,7 @@ mlruns/
 *.pb
 *.sav
 
-# datasets & large raw data
+# Datasets & large raw data
 data/
 datasets/
 raw_data/
@@ -53,6 +69,8 @@ processed_data/
 *.npz
 *.npy
 *.mat
+
+# Media (large/binary)—if you must keep README images
 *.wav
 *.mp3
 *.flac
@@ -82,10 +100,12 @@ dist/
 .eggs/
 .pytest_cache/
 .coverage*
+coverage.xml
 htmlcov/
 .mypy_cache/
 .pyre/
 .pytype/
+.ruff_cache/
 .cache/
 .ipynb_checkpoints/
 
@@ -97,6 +117,8 @@ ENV/
 pip-wheel-metadata/
 poetry.lock
 poetry.toml
+.tox/
+.python-version
 
 # ===== JUPYTER / NOTEBOOKS =====
 *.nbconvert.ipynb
@@ -118,6 +140,8 @@ docker-compose.override.yml
 .history/
 .idea/
 *.iml
+# VSCode workspace files
+*.code-workspace
 
 # macOS / Windows
 .DS_Store
@@ -128,3 +152,12 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# ===== OPTIONAL WHITELISTS =====
+# Keep docs/README images if needed:
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
+!docs/**/*.svg
+!assets/docs/**/*.png
+!assets/docs/**/*.jpg
