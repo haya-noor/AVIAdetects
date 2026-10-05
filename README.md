@@ -87,17 +87,17 @@ streamlit run common_firebase.py
 ```
 This opens the app in your browser (default http://localhost:8501). From the welcome screen you can continue as a Guest, or Login / Sign Up to get persistent history.
 
-📊 Dataset
+## Dataset
 - Video: curated real + synthetic videos covering multiple deepfake generation methods.
 - Audio: standard audio-deepfake datasets plus a custom-collected Urdu language dataset for regional-language support.
 - Image: GAN-generated images (StyleGAN2, ProGAN, StarGAN, etc.) and diffusion-generated images, alongside real photographs.
 
-🙏 Acknowledgments
+## Acknowledgments
 - GenConViT: this project's video model is built on and extends the GenConViT architecture.
 - The open-source community and dataset contributors in the deepfake-detection research space.
 - Our thesis advisors for their guidance.
 
-👥 Team
+## Team
 This project was completed as a Bachelor's Thesis by:
 
 Haya Noor — GitHub(https://github.com/haya-noor) — Video Module
