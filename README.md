@@ -100,8 +100,8 @@ This opens the app in your browser (default http://localhost:8501). From the wel
 ## Team
 This project was completed as a Bachelor's Thesis by:
 
-Haya Noor — GitHub(https://github.com/haya-noor) — Video Module
-Lailoma — GitHub(https://github.com/lailomanoor) — Image Module
-Itba — GitHub(https://github.com/ItbaMalahat) — Audio Module & Urdu Dataset
+Haya Noor — [GitHub](https://github.com/haya-noor) — Video Module
+Lailoma — [GitHub](https://github.com/lailomanoor) — Image Module
+Itba — [GitHub](https://github.com/ItbaMalahat) — Audio Module & Urdu Dataset
 
 Integration, Firebase backend, and testing were a collaborative effort.
