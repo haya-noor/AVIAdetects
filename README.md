@@ -85,7 +85,6 @@ None of the trained model weights are committed to this repo (they're large bina
 ```
 streamlit run common_firebase.py
 ```
-This opens the app in your browser (default http://localhost:8501). From the welcome screen you can continue as a Guest, or Login / Sign Up to get persistent history.
 
 ## Dataset
 - Video: curated real + synthetic videos covering multiple deepfake generation methods.
