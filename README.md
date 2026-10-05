@@ -5,11 +5,11 @@ A Streamlit web application that detects deepfakes across video, audio, and imag
 AVIA lets a user sign up / log in (or continue as a guest) and upload a video, audio clip, or image to get a Real/Fake prediction with a confidence score. Logged-in users' results are saved to Firestore and shown back to them as detection history.
 
 ## Features
-> Video Detection — frame sampling + face extraction, classified with a GenConViT (ViT + CNN) model.
-> Audio Detection — MFCC-feature spectrogram analysis via a Keras/TensorFlow model (trained with Urdu-language audio support).
-> Image Detection — ConvNeXt-based real/fake classifier, plus a second-stage classifier that identifies the likely generation technique (e.g. StyleGAN2, ProGAN,   Stable Diffusion, StarGAN, Denoising Diffusion GAN) for images flagged as fake.
-> Accounts & Guest Mode — Firebase Authentication for login/signup, a no-login guest mode, and cookie-based session persistence.
-> Detection History — results are written to Firestore and listed back to the logged-in user.
+ - Video Detection — frame sampling + face extraction, classified with a GenConViT (ViT + CNN) model.
+ - Audio Detection — MFCC-feature spectrogram analysis via a Keras/TensorFlow model (trained with Urdu-language audio support).
+ - Image Detection — ConvNeXt-based real/fake classifier, plus a second-stage classifier that identifies the likely generation technique (e.g. StyleGAN2, ProGAN,   Stable Diffusion, StarGAN, Denoising Diffusion GAN) for images flagged as fake.
+ - Accounts & Guest Mode — Firebase Authentication for login/signup, a no-login guest mode, and cookie-based session persistence.
+ - Detection History — results are written to Firestore and listed back to the logged-in user.
 
 ## Technologies Used
 Streamlit — web UI / app framework
