@@ -100,7 +100,9 @@ streamlit run common_firebase.py
 This project was completed as a Bachelor's Thesis by:
 
 Haya Noor — [GitHub](https://github.com/haya-noor) — Video Module
-Lailoma — [GitHub](https://github.com/lailomanoor) — Image Module
-Itba — [GitHub](https://github.com/ItbaMalahat) — Audio Module & Urdu Dataset
 
-Integration, Firebase backend, and testing were a collaborative effort.
+Lailoma — [GitHub](https://github.com/lailomanoor) — Image Module
+
+Itba — [GitHub](https://github.com/ItbaMalahat) — Audio Module, Firebase backend & Urdu Dataset
+
+Integration, and testing were a collaborative effort.
