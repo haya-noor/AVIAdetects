@@ -15,5 +15,8 @@ opencv-python-headless
 decord
 tqdm
 albumentations
+pyyaml
+dlib
+face_recognition
 requests==2.26.0
 requests-toolbelt==0.9.1
