@@ -1,208 +1,86 @@
-# Multimodal Deepfake Detection System
+AVIA — Audio-Visual Integrity Analyzer (Multimodal Deepfake Detection)
+A Streamlit web application that detects deepfakes across video, audio, and image media. Built on top of the GenConViT architecture for video, with dedicated models for audio (including Urdu-language support) and image deepfake detection, plus Firebase-backed accounts, guest mode, and per-user detection history.
 
-A comprehensive deepfake detection system capable of identifying synthetic content across multiple modalities: **video, audio, and images**. This project extends the GenConViT architecture to create a robust multimodal detection framework with enhanced capabilities for diverse media types.
+🎯 Overview
+AVIA lets a user sign up / log in (or continue as a guest) and upload a video, audio clip, or image to get a Real/Fake prediction with a confidence score. Logged-in users' results are saved to Firestore and shown back to them as detection history.
 
-## 🎯 Overview
+✨ Features
+Video Detection — frame sampling + face extraction, classified with a GenConViT (ViT + CNN) model.
+Audio Detection — MFCC-feature spectrogram analysis via a Keras/TensorFlow model (trained with Urdu-language audio support).
+Image Detection — ConvNeXt-based real/fake classifier, plus a second-stage classifier that identifies the likely generation technique (e.g. StyleGAN2, ProGAN, Stable Diffusion, StarGAN, Denoising Diffusion GAN) for images flagged as fake.
+Accounts & Guest Mode — Firebase Authentication for login/signup, a no-login guest mode, and cookie-based session persistence.
+Detection History — results are written to Firestore and listed back to the logged-in user.
+🛠️ Technologies Used
+Streamlit — web UI / app framework
+PyTorch + torchvision — video (GenConViT) and image (ConvNeXt) models
+TensorFlow / Keras — audio deepfake model
+librosa — audio feature extraction (MFCC)
+OpenCV, dlib, face_recognition, decord — video frame/face extraction
+timm, albumentations — model backbones and image augmentation
+Firebase (pyrebase, firebase-admin) — authentication, Firestore history, storage
+streamlit-cookies-manager — persisting login across sessions
+📁 Project Structure
+AVIAdetects/
+├── common_firebase.py        # ⭐ Main Streamlit app — run this file
+├── convnext_image.py         # ConvNeXt model definition (image detection)
+├── firebase_config.py        # Firebase web app config (pyrebase)
+├── firebase_admin_connect.py # Firebase Admin SDK init (Firestore)
+├── firestore.indexes.json    # Firestore index definitions
+├── requirements.txt
+├── model/                    # GenConViT video model
+│   ├── genconvit.py
+│   ├── genconvit_ed.py
+│   ├── genconvit_vae.py
+│   ├── model_embedder.py
+│   ├── pred_func.py          # video inference pipeline (face extraction, prediction)
+│   ├── config.py / config.yaml
+├── dataset/
+│   └── loader.py             # data normalization/augmentation helpers used by model/pred_func.py
+└── weight/                   # put GenConViT .pth weights here (not committed, see below)
+Earlier drafts of this app (app.py, integrated_app.py, common.py, unified_app.py, and the whole utils/ folder) have been removed — they were duplicate/incomplete iterations never wired into the final app. common_firebase.py is the only app entrypoint.
 
-This project implements a state-of-the-art multimodal deepfake detection system that can analyze and detect synthetic content in videos, images, and audio files. The system leverages deep learning architectures to identify manipulated media with high accuracy, including specialized support for **Urdu language audio detection**.
-
-## 🌟 Inspiration & Background
-
-This project was inspired by and built upon the foundational work of [GenConViT](https://github.com/erprogs/GenConViT). We utilized the original GenConViT model architecture as our starting point but significantly extended its capabilities through:
-
-- **Further training** with custom datasets across multiple modalities
-- **Integration of audio detection** models with specialized Urdu language support
-- **Integration of image detection** models for standalone image analysis
-- **Development of a unified multimodal framework** for comprehensive deepfake detection
-
-The result is a versatile system that goes beyond video-only detection to provide holistic deepfake identification across audio, video, and image domains.
-
-## ✨ Features
-
-### Video Detection
-- Frame-by-frame analysis using Vision Transformer architecture
-- Temporal consistency evaluation
-- Support for various video formats and resolutions
-- Real-time and batch processing capabilities
-
-### Audio Detection
-- Spectrogram-based analysis for audio deepfake detection
-- **Specialized training on Urdu language dataset** for multilingual support
-- Detection of voice cloning, speech synthesis, and audio manipulation
-- Works seamlessly with both English and Urdu audio content
-
-### Image Detection
-- Single-frame deepfake detection
-- Face manipulation and GAN-generated image identification
-- High-resolution image analysis
-- Fast inference for real-time applications
-
-### Multimodal Integration
-- Unified pipeline for processing mixed media content
-- Cross-modal feature fusion for enhanced accuracy
-- Comprehensive reporting across all modalities
-
-## 🛠️ Technologies Used
-
-### Deep Learning Frameworks
-- **PyTorch**: Primary deep learning framework for model development and training
-- **torchvision**: Image and video preprocessing utilities
-- **torchaudio**: Audio processing and feature extraction
-
-### Model Architectures
-- **Vision Transformer (ViT)**: Core architecture for image and video analysis (from GenConViT)
-- **Convolutional Neural Networks (CNNs)**: Feature extraction layers
-- **Transformer Encoders**: Sequence modeling and attention mechanisms
-- **Spectrogram-based CNNs**: Audio deepfake detection
-
-### Data Processing
-- **OpenCV**: Video frame extraction and image manipulation
-- **librosa**: Audio processing and spectrogram generation
-- **NumPy & Pandas**: Data manipulation and analysis
-- **PIL/Pillow**: Image preprocessing
-
-### Development & Deployment
-- **Python 3.8+**: Primary programming language
-- **scikit-learn**: Evaluation metrics and data splitting
-- **matplotlib & seaborn**: Visualization and result plotting
-- **Flask/FastAPI**: API development for model serving (optional)
-- **Docker**: Containerization for deployment
-
-### Training Infrastructure
-- **CUDA/cuDNN**: GPU acceleration
-- **Weights & Biases / TensorBoard**: Experiment tracking
-- **Mixed Precision Training**: Efficient model training
-
-## 🏗️ Architecture
-
-### System Overview
-```
-Input (Video/Audio/Image)
-    ↓
-Preprocessing Module
-    ↓
-┌─────────────┬──────────────┬─────────────┐
-│   Video     │    Audio     │    Image    │
-│  Detection  │  Detection   │  Detection  │
-│   Model     │    Model     │    Model    │
-└─────────────┴──────────────┴─────────────┘
-    ↓
-Feature Fusion Layer
-    ↓
-Classification Head
-    ↓
-Output (Real/Fake + Confidence Score)
-```
-
-### Video Model
-- **Base**: GenConViT architecture
-- **Input**: Video frames (224x224 RGB)
-- **Backbone**: Vision Transformer with convolutional stem
-- **Output**: Per-frame and aggregated video-level predictions
-
-### Audio Model
-- **Input**: Audio spectrograms (Mel-frequency or STFT)
-- **Architecture**: CNN-based feature extractor + Transformer encoder
-- **Special Feature**: Trained on Urdu language dataset for multilingual detection
-- **Output**: Audio authenticity classification
-
-### Image Model
-- **Input**: Single images (224x224 RGB)
-- **Architecture**: Modified ViT with specialized detection head
-- **Output**: Image-level fake/real classification
-
-## 📊 Dataset
-
-### Video Dataset
-- Custom curated dataset combining multiple sources
-- Real and synthetic videos from various generation methods
-- Diverse facial manipulations and deepfake techniques
-
-### Audio Dataset
-- **English Audio**: Standard audio deepfake datasets
-- **Urdu Audio**: Custom-collected Urdu language dataset for regional language support
-- Voice cloning and TTS-generated samples
-- Real recordings from diverse speakers
-
-### Image Dataset
-- GAN-generated images (StyleGAN, ProGAN, etc.)
-- Face-swap and manipulation datasets
-- Real photographs from various sources
-
-## 🚀 Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- CUDA-capable GPU (recommended)
-- 16GB+ RAM
-
-### Setup
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/yourusername/multimodal-deepfake-detection.git
-cd multimodal-deepfake-detection
-```
-
-2. **Create virtual environment**
-```bash
+🚀 Installation & Setup
+Prerequisites
+Python 3.8+
+CUDA-capable GPU recommended (CPU also works, just slower for video)
+cmake and a C++ build toolchain installed on your system before pip install (required to build dlib)
+1. Clone the repository
+git clone https://github.com/haya-noor/AVIAdetects.git
+cd AVIAdetects
+2. Create a virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. **Install dependencies**
-```bash
+source venv/bin/activate   # Windows: venv\Scripts\activate
+3. Install dependencies
 pip install -r requirements.txt
+4. Add the model weight files
+None of the trained model weights are committed to this repo (they're large binaries, excluded via .gitignore). You need to obtain/place them yourself:
 
-```
+File	Used for	Location
+genconvit_ed_inference.pth	Video detection (encoder-decoder)	weight/
+genconvit_vae_inference.pth	Video detection (VAE)	weight/
+my_model.h5	Audio detection	project root
+convnext_tiny_1k_224_ema_image.pth	Image real/fake detection	project root
+checkpoint_epoch_20 (2).pth	Image real/fake classifier checkpoint	project root
+convnext2_epoch_20.pth	Image generation-technique classifier	project root
+5. Configure Firebase
+firebase_config.py holds the Firebase web app config (already present in this repo).
+firebase_admin_connect.py needs a serviceAccountKey.json (Firebase Admin SDK service account) in the project root — this is not committed (it's a secret). Generate one from your Firebase project's Settings → Service Accounts, and save it as serviceAccountKey.json at the repo root.
+6. Run the app
+streamlit run common_firebase.py
+This opens the app in your browser (default http://localhost:8501). From the welcome screen you can continue as a Guest, or Login / Sign Up to get persistent history.
 
-### Multimodal Analysis
-```python
-result = detector.detect_multimodal(
-    video="path/to/video.mp4",
-    audio="path/to/audio.wav",
-    image="path/to/image.jpg"
-)
-print(result)
-```
+📊 Dataset
+Video: curated real + synthetic videos covering multiple deepfake generation methods.
+Audio: standard audio-deepfake datasets plus a custom-collected Urdu language dataset for regional-language support.
+Image: GAN-generated images (StyleGAN2, ProGAN, StarGAN, etc.) and diffusion-generated images, alongside real photographs.
+🙏 Acknowledgments
+GenConViT: this project's video model is built on and extends the GenConViT architecture.
+Our thesis advisors and mentors for their guidance.
+The open-source community and dataset contributors in the deepfake-detection research space.
+👥 Team
+This project was completed as a Bachelor's Thesis by:
 
-### Command Line Interface
-```bash
-# Video detection
-python detect.py --mode video --input video.mp4
-
-# Audio detection (works with Urdu)
-python detect.py --mode audio --input audio.wav
-
-# Image detection
-python detect.py --mode image --input image.jpg
-
-# Multimodal detection
-python detect.py --mode multimodal --video video.mp4 --audio audio.wav
-```
-
-## 👥 Team
-
-This project was completed as a **Bachelor's Thesis** by:
-
-- **Haya Noor** - [GitHub](https://github.com/haya-noor) 
-- **Lailoma** - [GitHub](https://github.com/lailomanoor) 
-- **Itba** - [GitHub](https://github.com/ItbaMalahat) 
-
-### Contributions
-- **Model Development**: All team members
-- **Video Module**: [Haya Noor]
-- **Audio Module & Urdu Dataset**: [Itba Malahat]
-- **Image Module**: [Lailoma Noor]
-- **Integration & Testing**: Collaborative effort
-
-## 🙏 Acknowledgments
-
-- **GenConViT Project**: Special thanks to the [GenConViT repository](https://github.com/erprogs/GenConViT) for providing the foundational model architecture that inspired this work
-- Our thesis advisors and mentors for their guidance
-- The open-source community for various tools and libraries
-- Dataset contributors and researchers in the deepfake detection community
-
----
-
-**Note**: This is an academic research project. Models and results should be validated for production use cases. Always consider ethical implications when deploying deepfake detection systems.
+Haya Noor — GitHub — Video Module
+Lailoma — GitHub — Image Module
+Itba — GitHub — Audio Module & Urdu Dataset
+Integration, Firebase backend, and testing were a collaborative effort.
