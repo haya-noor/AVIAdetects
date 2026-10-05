@@ -22,6 +22,7 @@ AVIA lets a user sign up / log in (or continue as a guest) and upload a video, a
 - streamlit-cookies-manager — persisting login across sessions
 
  ## Project Structure
+ ```
 AVIAdetects/
  ├── common_firebase.py        # Main Streamlit app — run this file
  ├── convnext_image.py         # ConvNeXt model definition (image detection)
@@ -39,7 +40,7 @@ AVIAdetects/
  ├── dataset/
  │   └── loader.py             # data normalization/augmentation helpers used by model/pred_func.py
  └── weight/                   # put GenConViT .pth weights here (not committed, see below)
-
+```
 
 ## Installation & Setup
 # Prerequisites
@@ -54,47 +55,52 @@ cd AVIAdetects
 ```
 
 2. Create a virtual environment
+```
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
+```
 
 3. Install dependencies
+```
 pip install -r requirements.txt
+```
 
 4. Add the model weight files
 None of the trained model weights are committed to this repo (they're large binaries, excluded via .gitignore). You need to obtain/place them yourself:
-
-File	Used for	Location
-genconvit_ed_inference.pth	Video detection (encoder-decoder)	weight/
-genconvit_vae_inference.pth	Video detection (VAE)	weight/
-my_model.h5	Audio detection	project root
-convnext_tiny_1k_224_ema_image.pth	Image real/fake detection	project root
-checkpoint_epoch_20 (2).pth	Image real/fake classifier checkpoint	project root
-convnext2_epoch_20.pth	Image generation-technique classifier	project root
-
+| File | Used for | Location |
+|---|---|---|
+| `genconvit_ed_inference.pth` | Video detection (encoder-decoder) | `weight/` |
+| `genconvit_vae_inference.pth` | Video detection (VAE) | `weight/` |
+| `my_model.h5` | Audio detection | project root |
+| `convnext_tiny_1k_224_ema_image.pth` | Image real/fake detection | project root |
+| `checkpoint_epoch_20 (2).pth` | Image real/fake classifier checkpoint | project root |
+| `convnext2_epoch_20.pth` | Image generation-technique classifier | project root |
 
 5. Configure Firebase
-firebase_config.py holds the Firebase web app config (already present in this repo).
-firebase_admin_connect.py needs a serviceAccountKey.json (Firebase Admin SDK service account) in the project root — this is not committed (it's a secret). Generate one from your Firebase project's Settings → Service Accounts, and save it as serviceAccountKey.json at the repo root.
+- firebase_config.py holds the Firebase web app config (already present in this repo).
+- firebase_admin_connect.py needs a serviceAccountKey.json (Firebase Admin SDK service account) in the project root — this is not committed (it's a secret). Generate one from your Firebase project's Settings → Service Accounts, and save it as serviceAccountKey.json at the repo root.
 
 6. Run the app
+```
 streamlit run common_firebase.py
+```
 This opens the app in your browser (default http://localhost:8501). From the welcome screen you can continue as a Guest, or Login / Sign Up to get persistent history.
 
 📊 Dataset
-Video: curated real + synthetic videos covering multiple deepfake generation methods.
-Audio: standard audio-deepfake datasets plus a custom-collected Urdu language dataset for regional-language support.
-Image: GAN-generated images (StyleGAN2, ProGAN, StarGAN, etc.) and diffusion-generated images, alongside real photographs.
+- Video: curated real + synthetic videos covering multiple deepfake generation methods.
+- Audio: standard audio-deepfake datasets plus a custom-collected Urdu language dataset for regional-language support.
+- Image: GAN-generated images (StyleGAN2, ProGAN, StarGAN, etc.) and diffusion-generated images, alongside real photographs.
 
 🙏 Acknowledgments
-GenConViT: this project's video model is built on and extends the GenConViT architecture.
-The open-source community and dataset contributors in the deepfake-detection research space.
-Our thesis advisors for their guidance.
+- GenConViT: this project's video model is built on and extends the GenConViT architecture.
+- The open-source community and dataset contributors in the deepfake-detection research space.
+- Our thesis advisors for their guidance.
 
 👥 Team
 This project was completed as a Bachelor's Thesis by:
 
-Haya Noor — GitHub — Video Module
-Lailoma — GitHub — Image Module
-Itba — GitHub — Audio Module & Urdu Dataset
+Haya Noor — GitHub(https://github.com/haya-noor) — Video Module
+Lailoma — GitHub(https://github.com/lailomanoor) — Image Module
+Itba — GitHub(https://github.com/ItbaMalahat) — Audio Module & Urdu Dataset
 
 Integration, Firebase backend, and testing were a collaborative effort.
