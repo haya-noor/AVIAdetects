@@ -66,10 +66,7 @@ def do_logout():
     cookies["idToken"] = ""
     cookies["uid"] = ""
     cookies.save()
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
-    else:
-        st.markdown("<script>window.location.reload();</script>", unsafe_allow_html=True)
+    st.rerun()
 
 def handle_login(email, password):
     try:
@@ -284,9 +281,10 @@ def remove_key_recursively(d,key):
 
 def predict_video_file(path,model,n=15,net="genconvit",fp16=False):
     if not is_video(path): return None,None
-    df=df_face(path,n,net); df=df.half() if fp16 else df
-    y,conf=pred_vid(df,model) if len(df)>=1 else (0,0)
-    return y,conf
+    df=df_face(path,n,net)
+    if len(df)<1: return None,None
+    df=df.half() if fp16 else df
+    return pred_vid(df,model)
 
 import datetime
 
@@ -303,6 +301,9 @@ def store_result(tp, filename, result, confidence, local_path=None):
       local_path (str, optional): local filesystem path to upload
     """
     file_url = None
+
+    if st.session_state.is_guest:
+        increment_guest_tries()
 
     # 1️⃣ Optional upload to Storage
     if local_path:
@@ -339,12 +340,12 @@ def auth_sidebar():
     act   = st.sidebar.radio("Action",["Login","Sign Up"])
     email = st.sidebar.text_input("Email")
     pwd   = st.sidebar.text_input("Password",type="password")
-    if act=="Login" and st.sidebar.button("Login"):
+    if act=="Login" and st.sidebar.button("Login",key="auth_sidebar_login"):
         try:
             u=auth.sign_in_with_email_and_password(email,pwd)
             st.session_state.update(user_email=email,idToken=u["idToken"],uid=u["localId"],show_auth=False); st.rerun()
         except Exception as e: st.error(f"Login failed: {e}")
-    if act=="Sign Up" and st.sidebar.button("Sign Up"):
+    if act=="Sign Up" and st.sidebar.button("Sign Up",key="auth_sidebar_signup"):
         try:
             u=auth.create_user_with_email_and_password(email,pwd)
             st.session_state.update(user_email=email,idToken=u["idToken"],uid=u["localId"],show_auth=False); st.rerun()
@@ -359,7 +360,7 @@ def welcome_interface():
     with mid:
         l,r = st.columns(2)
         if l.button("🔓 Guest Mode"):
-            st.session_state.update(user_email="guest",guest_count=5,show_auth=False); st.rerun()
+            st.session_state.update(user_email="guest",is_guest=True,guest_tries=0,show_auth=False); st.rerun()
         if r.button("🔐 Login / Sign Up"): st.session_state.show_auth=True
     if st.session_state.show_auth: auth_sidebar()
 
@@ -415,7 +416,7 @@ def detection_interface():
                     pred=real_or_fake(y); conf=1-conf if pred=="REAL" else conf
                     st.success(f"{pred} • {conf*100:.2f}%"); store_result("Video",uploaded.name,pred,conf*100)
                 else:
-                    st.error("Prediction failed")
+                    st.error("Prediction failed: not a valid video, or no face was detected")
 
         st.markdown("</div>",unsafe_allow_html=True)  # close card
 
@@ -443,21 +444,25 @@ def load_history(user_email):
 
 # ─────────────────────────────  ROUTING  ───────────────────────────────
 def main():
-    if st.session_state.user_email is None:
+    if st.session_state.is_guest:
+        # Guest mode (5-trial limit)
+        banner = st.empty()
+        if can_guest_detect():
+            detection_interface()
+        else:
+            show_guest_reached_limit()
+        banner.info(f"You are in Guest mode. Remaining tries: {max(0, 5 - st.session_state.guest_tries)}")
+
+    elif st.session_state.user_email is None:
         welcome_interface()
-    elif st.session_state.user_email and st.session_state.user_email != "guest":
+
+    else:
         # Logged‐in user sidebar actions
         with st.sidebar:
             if st.button("📂 View My History"):
-                st.experimental_rerun()
+                st.rerun()
             if st.button("🚪 Logout"):
-                st.session_state.update(
-                    user_email=None,
-                    idToken=None,
-                    uid=None,
-                    show_auth=None
-                )
-                st.experimental_rerun()
+                do_logout()
 
         # Main detection interface
         detection_interface()
@@ -468,12 +473,6 @@ def main():
             st.dataframe(history_df)
         else:
             st.info("No records found in your history yet.")
-
-    else:
-        # Guest limit reached or no auth
-        st.warning("Guest limit reached. Please sign up or log in.")
-        st.session_state.user_email = None
-        welcome_interface()
 
 if __name__ == "__main__":
     main()
