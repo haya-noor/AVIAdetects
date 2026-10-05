@@ -67,6 +67,7 @@ pip install -r requirements.txt
 
 4. Add the model weight files
 None of the trained model weights are committed to this repo (they're large binaries, excluded via .gitignore). You need to obtain/place them yourself:
+
 | File | Used for | Location |
 |---|---|---|
 | `genconvit_ed_inference.pth` | Video detection (encoder-decoder) | `weight/` |
