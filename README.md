@@ -12,44 +12,46 @@ AVIA lets a user sign up / log in (or continue as a guest) and upload a video, a
  - Detection History — results are written to Firestore and listed back to the logged-in user.
 
 ## Technologies Used
-Streamlit — web UI / app framework
-PyTorch + torchvision — video (GenConViT) and image (ConvNeXt) models
-TensorFlow / Keras — audio deepfake model
-librosa — audio feature extraction (MFCC)
-OpenCV, dlib, face_recognition, decord — video frame/face extraction
-timm, albumentations — model backbones and image augmentation
-Firebase (pyrebase, firebase-admin) — authentication, Firestore history, storage
-streamlit-cookies-manager — persisting login across sessions
+- Streamlit — web UI / app framework
+- PyTorch + torchvision — video (GenConViT) and image (ConvNeXt) models
+- TensorFlow / Keras — audio deepfake model
+- librosa — audio feature extraction (MFCC)
+- OpenCV, dlib, face_recognition, decord — video frame/face extraction
+- timm, albumentations — model backbones and image augmentation
+- Firebase (pyrebase, firebase-admin) — authentication, Firestore history, storage
+- streamlit-cookies-manager — persisting login across sessions
 
  ## Project Structure
 AVIAdetects/
-├── common_firebase.py        # Main Streamlit app — run this file
-├── convnext_image.py         # ConvNeXt model definition (image detection)
-├── firebase_config.py        # Firebase web app config (pyrebase)
-├── firebase_admin_connect.py # Firebase Admin SDK init (Firestore)
-├── firestore.indexes.json    # Firestore index definitions
-├── requirements.txt
-├── model/                    # GenConViT video model
-│   ├── genconvit.py
-│   ├── genconvit_ed.py
-│   ├── genconvit_vae.py
-│   ├── model_embedder.py
-│   ├── pred_func.py          # video inference pipeline (face extraction, prediction)
-│   ├── config.py / config.yaml
-├── dataset/
-│   └── loader.py             # data normalization/augmentation helpers used by model/pred_func.py
-└── weight/                   # put GenConViT .pth weights here (not committed, see below)
+ ├── common_firebase.py        # Main Streamlit app — run this file
+ ├── convnext_image.py         # ConvNeXt model definition (image detection)
+ ├── firebase_config.py        # Firebase web app config (pyrebase)
+ ├── firebase_admin_connect.py # Firebase Admin SDK init (Firestore)
+ ├── firestore.indexes.json    # Firestore index definitions
+ ├── requirements.txt
+ ├── model/                    # GenConViT video model
+ │   ├── genconvit.py
+ │   ├── genconvit_ed.py
+ │   ├── genconvit_vae.py
+ │   ├── model_embedder.py
+ │   ├── pred_func.py          # video inference pipeline (face extraction, prediction)
+ │   ├── config.py / config.yaml
+ ├── dataset/
+ │   └── loader.py             # data normalization/augmentation helpers used by model/pred_func.py
+ └── weight/                   # put GenConViT .pth weights here (not committed, see below)
 
 
 ## Installation & Setup
-Prerequisites
-Python 3.8+
-CUDA-capable GPU recommended (CPU also works, just slower for video)
-cmake and a C++ build toolchain installed on your system before pip install (required to build dlib)
+# Prerequisites
+- Python 3.8+
+- CUDA-capable GPU recommended (CPU also works, just slower for video)
+- cmake and a C++ build toolchain installed on your system before pip install (required to build dlib)
 
 1. Clone the repository
+```
 git clone https://github.com/haya-noor/AVIAdetects.git
 cd AVIAdetects
+```
 
 2. Create a virtual environment
 python -m venv venv
